@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<!--
+  HOW TO CUSTOMIZE  (everything lives in the CONFIG block near the bottom of this file)
+  1. Names, initials, letter, greeting, messages, captions  -> edit CONFIG.
+  2. Photos: put images in a folder named "photos" next to this file (1.jpg, 2.jpg ...), then list them in CONFIG.photos.
+  3. Music: put your piano file at "music/piano.mp3" (or change CONFIG.music). No file? A soft built-in piano plays instead.
+  4. Publish: drag the whole folder (index.html + photos + music) onto https://app.netlify.com/drop
+     or upload it to a GitHub repo and enable GitHub Pages (Settings > Pages).
+-->
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>A Letter For You</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#d9b96e;--gold2:#f3dfa2;--ivory:#f6efdd;--beige:#e6d8b8;--ink:#2b2218;--bg:#0b0805;
+--serif:'Cormorant Garamond',Georgia,serif;--cap:'Cinzel','Times New Roman',serif;
+--grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .33 0 0 0 0 .15 0 0 0 .25 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--ivory);font-family:var(--serif);-webkit-font-smoothing:antialiased}
+body.lock{overflow:hidden;height:100%}
+.bg{position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 38%,#4a3419 0%,#1b130b 52%,#050403 100%)}
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;opacity:.6;transition:opacity 2.5s}
+#flash{position:fixed;inset:0;z-index:30;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 45%,#fff3cf,rgba(217,185,110,.5) 40%,transparent 75%)}
+#flash.go{animation:fl 3s ease-out}@keyframes fl{0%{opacity:.95}100%{opacity:0}}
+.screen{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;perspective:1400px;opacity:0;visibility:hidden;transition:opacity 1.4s ease,visibility 1.4s}
+.screen.on{opacity:1;visibility:visible}
+.cap{font-family:var(--cap);letter-spacing:.32em;text-transform:uppercase;font-size:.78rem;color:var(--gold);line-height:2}
+.big{font-weight:400;font-style:italic;font-size:clamp(1.9rem,6.4vw,3.4rem);line-height:1.25;text-shadow:0 0 40px rgba(217,185,110,.3)}
+.sub{font-size:clamp(1.1rem,3.4vw,1.45rem);color:var(--beige);opacity:.85;margin-top:.8rem;font-style:italic}
+.orn{width:120px;height:1px;margin:22px auto;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.btn{font-family:var(--cap);letter-spacing:.3em;font-size:.8rem;color:var(--gold2);background:rgba(11,8,5,.4);border:1px solid var(--gold);padding:1.1em 2.2em;cursor:pointer;transition:background .5s,color .5s,box-shadow .5s,opacity 1.2s;animation:pulse 3s infinite}
+.btn:hover,.btn:focus-visible{background:var(--gold);color:#1b130b;box-shadow:0 0 34px rgba(217,185,110,.55);outline:none}
+@keyframes pulse{50%{box-shadow:0 0 26px rgba(217,185,110,.35)}}
+.fade{opacity:1;transition:opacity 1.2s}.fade.hide{opacity:0;pointer-events:none}
+#s-inv .btn{margin-top:2.4rem}
+/* envelope */
+.env{position:relative;width:min(82vw,400px);aspect-ratio:1.5;margin:3.4rem 0 3rem;perspective:1000px;cursor:pointer;animation:float 6s ease-in-out infinite;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+@keyframes float{50%{translate:0 -12px}}
+.env.fwd{transform:scale(1.1) translateY(14px)}
+.env>*{position:absolute}
+.eb{inset:0;background:linear-gradient(#efe4c9,#e0d0a8);border:1px solid var(--gold);border-radius:3px;box-shadow:0 30px 60px rgba(0,0,0,.65),0 0 90px rgba(217,185,110,.14);z-index:1}
+.eb::after{content:'';position:absolute;inset:7px;border:1px solid rgba(190,150,70,.6)}
+.lt{left:5%;right:5%;top:7%;bottom:7%;z-index:2;background:var(--grain),repeating-linear-gradient(#fbf6e8 0 17px,#efe5c9 17px 18px);box-shadow:0 0 14px rgba(0,0,0,.3);transition:transform 1.7s cubic-bezier(.3,.7,.2,1)}
+.env.out .lt{transform:translateY(-64%)}
+.front{inset:0;width:100%;height:100%;z-index:3;filter:drop-shadow(0 -2px 6px rgba(0,0,0,.18))}
+.flap{left:0;right:0;top:0;height:58%;transform-origin:50% 0;z-index:4;transition:transform 1.5s cubic-bezier(.5,0,.2,1),z-index 0s .7s;filter:drop-shadow(0 6px 8px rgba(0,0,0,.25))}
+.flap svg{width:100%;height:100%;display:block}
+.env.open .flap{transform:rotateX(180deg);z-index:1}
+.env polygon{stroke:#c49a4c;stroke-width:1.3;vector-effect:non-scaling-stroke}
+.front polygon{fill:url(#pg)}.flap polygon{fill:url(#pf)}
+.seal{left:50%;top:58%;width:17%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:6;filter:drop-shadow(0 6px 8px rgba(0,0,0,.5));animation:glow 3s ease-in-out infinite}
+@keyframes glow{50%{filter:drop-shadow(0 6px 8px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(217,185,110,.7))}}
+.seal i{position:absolute;inset:0;border-radius:50% 46% 52% 48%;font-style:normal;display:grid;place-items:center;font:600 clamp(.85rem,3.6vw,1.3rem) var(--cap);letter-spacing:.04em;color:#f0c3b6;text-shadow:0 1px 0 rgba(0,0,0,.55),0 -1px 0 rgba(255,255,255,.18);background:radial-gradient(circle at 35% 30%,#d94a3c,#8e1410 60%,#5a0a08);box-shadow:inset 0 0 0 4px rgba(255,255,255,.07),inset 0 -3px 6px rgba(0,0,0,.45);transition:transform 1s cubic-bezier(.3,.1,.3,1),opacity .9s .35s}
+.seal .l{clip-path:polygon(0 0,52% 0,43% 30%,57% 55%,46% 100%,0 100%)}
+.seal .r{clip-path:polygon(52% 0,100% 0,100% 100%,46% 100%,57% 55%,43% 30%)}
+.env.crack .seal{animation:none}
+.env.crack .l{transform:translate(-24px,22px) rotate(-28deg);opacity:0}
+.env.crack .r{transform:translate(24px,30px) rotate(32deg);opacity:0}
+/* letter */
+.paper{width:min(92vw,560px);max-height:72svh;overflow:auto;background:var(--grain),linear-gradient(#fcf8ec,#f1e7cd);color:var(--ink);padding:clamp(28px,6vw,54px);border:1px solid rgba(190,150,70,.65);outline:1px solid rgba(190,150,70,.35);outline-offset:-10px;box-shadow:0 40px 90px rgba(0,0,0,.75),inset 0 0 60px rgba(160,120,50,.2);text-align:left;transform-origin:50% 0;opacity:0;cursor:pointer}
+.paper.unf{animation:unfold 2.4s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes unfold{0%{opacity:0;transform:translateY(90px) scaleY(.06) rotateX(-75deg)}35%{opacity:1;transform:translateY(34px) scaleY(.45) rotateX(-28deg)}100%{opacity:1;transform:none}}
+.paper p{font-size:clamp(1.15rem,3.8vw,1.45rem);line-height:1.7;margin-bottom:1em;font-style:italic}
+.paper span{opacity:0;transition:opacity .5s}.paper span.v{opacity:1}
+#cont{margin-top:1.8rem;opacity:0;pointer-events:none}#cont.show{opacity:1;pointer-events:auto}
+/* countdown */
+#num{font-family:var(--cap);font-size:clamp(6rem,30vw,15rem);color:var(--gold2);text-shadow:0 0 60px rgba(217,185,110,.7)}
+#num.tick{animation:tick 1.1s ease-out}
+@keyframes tick{0%{opacity:0;transform:scale(1.5);filter:blur(14px)}25%{opacity:1;transform:none;filter:none}80%{opacity:1}100%{opacity:0;transform:scale(.92)}}
+/* main */
+main{position:relative;z-index:2}
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;overflow:hidden}
+.hero::before{content:'';position:absolute;width:200vmax;height:200vmax;left:50%;top:50%;margin:-100vmax;background:repeating-conic-gradient(rgba(217,185,110,.07) 0 5deg,transparent 5deg 15deg);-webkit-mask:radial-gradient(circle,#000 0,transparent 30%);mask:radial-gradient(circle,#000 0,transparent 30%);animation:spin 120s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero>*{position:relative}
+.hero h1{font-weight:400}
+.l1{display:block;font-family:var(--cap);font-size:clamp(1.3rem,5.4vw,3rem);letter-spacing:.2em;color:var(--ivory)}
+.nm{display:block;font-style:italic;font-size:clamp(3.2rem,15vw,9rem);line-height:1.1;margin-top:.15em;color:var(--gold2);text-shadow:0 0 50px rgba(217,185,110,.55)}
+.w{display:inline-block;white-space:nowrap}
+.ch{display:inline-block;opacity:0;filter:blur(14px);transform:translateY(26px) scale(1.12)}
+.go .ch{animation:ch 1.7s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--i)*.07s + .5s)}
+@keyframes ch{to{opacity:1;filter:none;transform:none}}
+.hero .cap,.hero .sub,.cue{opacity:0}.go .cap,.go .sub{animation:in 2s 3.6s forwards}.go .cue{animation:in 2s 5s forwards}
+.hero .cap{margin-bottom:1.4rem}.go .cap{animation-delay:.2s}
+@keyframes in{to{opacity:.9}}
+.cue{width:1px;height:70px;margin-top:3rem;background:linear-gradient(var(--gold),transparent);transform-origin:top}.go .cue{animation:in 2s 5s forwards,cue 2.4s 5s infinite}
+@keyframes cue{50%{transform:scaleY(.4)}}
+.sec{max-width:720px;margin:0 auto;padding:12vh 24px;text-align:center}.sec.wide{max-width:1100px}
+#msg p,.final{font-size:clamp(1.25rem,3.6vw,1.6rem);line-height:1.9;color:var(--beige);margin-bottom:1.2em}
+.final{font-style:italic;color:var(--ivory);font-size:clamp(1.5rem,4.6vw,2.2rem);line-height:1.6}
+.sig{font-family:var(--cap);letter-spacing:.3em;color:var(--gold);font-size:.9rem;margin-top:1.6rem}
+.rv{opacity:0;transform:translateY(28px);transition:opacity 1.4s,transform 1.4s}.rv.v{opacity:1;transform:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:26px;margin-top:2.4rem}
+figure.ph{background:var(--grain),#efe4c9;padding:12px 12px 16px;color:var(--ink);box-shadow:0 20px 40px rgba(0,0,0,.55);rotate:var(--r,0deg);transition:rotate .5s,transform .5s;cursor:pointer;border:1px solid rgba(190,150,70,.5)}
+figure.ph:nth-child(odd){--r:-1.3deg}figure.ph:nth-child(even){--r:1.1deg}
+figure.ph:hover{rotate:0deg;transform:translateY(-6px)}
+.ph img,.ph .em{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;background:#2a2014}
+.ph .em{display:grid;place-items:center;color:var(--gold);font-style:italic;background:linear-gradient(145deg,#33271a,#1b130b)}
+.ph figcaption{font-style:italic;font-size:1.15rem;margin-top:12px}
+footer{text-align:center;padding:0 0 14vh;color:var(--gold);font-family:var(--cap);letter-spacing:.3em;font-size:.7rem;opacity:.6}
+#lb{position:fixed;inset:0;z-index:20;background:rgba(5,4,3,.95);display:flex;align-items:center;justify-content:center;gap:10px;padding:16px}
+#lb figure{text-align:center;max-width:86vw}#lb img{max-width:100%;max-height:76svh;border:1px solid var(--gold)}
+#lb figcaption{margin-top:12px;font-style:italic;font-size:1.25rem;color:var(--beige)}
+#lb button{background:none;border:0;color:var(--gold2);font:2.6rem var(--serif);cursor:pointer;padding:8px 12px}#lb .x{position:absolute;top:10px;right:14px}
+/* music */
+#mus{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));z-index:12;display:flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;border:1px solid rgba(217,185,110,.5);border-radius:40px;background:rgba(11,8,5,.7);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity 1.5s}
+#mus.on{opacity:1;pointer-events:auto}
+#pp{width:34px;height:34px;border-radius:50%;border:1px solid var(--gold);background:none;cursor:pointer;display:grid;place-items:center}
+#pp svg{width:14px;fill:var(--gold2)}
+#vol{width:80px;accent-color:var(--gold)}
+:focus-visible{outline:2px solid var(--gold2);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.env,.hero::before{animation:none}}
+</style></head>
+<body class="lock">
+<svg width="0" height="0" style="position:absolute"><defs>
+<linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4ecd6"/><stop offset="1" stop-color="#dccb9f"/></linearGradient>
+<linearGradient id="pf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9dcbb"/><stop offset="1" stop-color="#f6eed9"/></linearGradient></defs></svg>
+<div class="bg"></div><canvas id="fx"></canvas><div id="flash"></div>
+
+<!-- 1. Opening invitation -->
+<section class="screen on" id="s-inv">
+  <p class="cap">You are cordially invited</p><div class="orn"></div>
+  <h1 class="big">A small surprise<br>is waiting for <span data-name></span></h1>
+  <p class="sub">Turn your sound on, and take your time.</p>
+  <button class="btn" id="begin">BEGIN</button>
+</section>
+
+<!-- 2. Sealed envelope -->
+<section class="screen" id="s-env">
+  <h2 class="big fade" id="eh">Someone left something for you...</h2>
+  <p class="sub fade" id="es">A letter you've been waiting for, perhaps?</p>
+  <div class="env" id="env" role="button" tabindex="0" aria-label="Open your letter">
+    <div class="eb"></div><div class="lt"></div>
+    <svg class="front" viewBox="0 0 300 200" preserveAspectRatio="none"><polygon points="0,0 150,112 300,0 300,200 0,200"/></svg>
+    <div class="flap"><svg viewBox="0 0 300 116" preserveAspectRatio="none"><polygon points="0,0 300,0 150,116"/></svg></div>
+    <div class="seal"><i class="l"></i><i class="r"></i></div>
+  </div>
+  <button class="btn fade" id="openBtn">OPEN YOUR LETTER</button>
+</section>
+
+<!-- 3. The letter -->
+<section class="screen" id="s-letter">
+  <article class="paper" id="paper" title="Tap to skip the typing"><div id="txt"></div></article>
+  <button class="btn" id="cont">CONTINUE READING</button>
+</section>
+
+<!-- 4. Countdown -->
+<section class="screen" id="s-count"><div id="num"></div></section>
+
+<!-- 5. The reveal and everything after -->
+<main id="main" hidden>
+  <header class="hero" id="hero">
+    <p class="cap" id="kick"></p>
+    <h1 id="gr"><span class="l1"></span><span class="nm"></span></h1>
+    <p class="sub" id="tag"></p><div class="cue"></div>
+  </header>
+  <section class="sec rv"><p class="cap">A few words from me</p><div class="orn"></div><div id="msg"></div></section>
+  <section class="sec wide rv"><p class="cap">Moments we kept</p><div class="orn"></div><div class="grid" id="grid"></div></section>
+  <section class="sec rv"><div class="orn"></div><p class="final" id="fin"></p><p class="sig" id="sig"></p></section>
+  <footer>&#10022;</footer>
+</main>
+
+<div id="lb" hidden><button class="x" id="lx" aria-label="Close">&times;</button><button id="lp" aria-label="Previous">&lsaquo;</button><figure><img id="li" alt=""><figcaption id="lc"></figcaption></figure><button id="ln" aria-label="Next">&rsaquo;</button></div>
+<div id="mus"><button id="pp" aria-label="Play or pause music"></button><input id="vol" type="range" min="0" max="1" step=".01" value=".6" aria-label="Volume"></div>
+
+<!-- ============ EDIT HERE ============ -->
+<script>
+const CONFIG={
+  friendName:"Sie-J Garcia",            // appears in the letter and the greeting
+  initials:"SJG",                // engraved on the wax seal (1-2 letters look best)
+  music:"il2IqY57GdlmwbW.mp3",      // your piano file; leave "" for the built-in soft piano
+  letter:[                      // each line is a paragraph; {name} is replaced automatically
+    "Dear Sie-J,",
+    "If you're reading this, it means you've made it this far.",
+    "You might be wondering why there's a whole website dedicated to you.",
+    "Well, there's a reason.",
+    "Some people deserve more than just a simple birthday greeting. And today, you're one of those people.",
+    "But before I tell you everything...",
+    "There's one more thing waiting for you."
+  ],
+  greeting:["HAPPY BIRTHDAY,","Sie-J!"],
+  kicker:"A day made for you",
+  tagline:"Scroll gently. There is more.",
+  message:[                     // your personal birthday message
+    "To someone who deserves more than just a simple birthday greeting, Happy Birthday! ❤️.",
+    "Happy Birthday! ❤️ I hope you know how special you are, not just today because it's your birthday, but even on the ordinary days when you don't really think much of yourself. You might not notice it, but you bring something good into the lives of the people around you. And I hope you never doubt that your presence matters. You deserve to be appreciated, celebrated, and reminded that you're important too. I hope you know how special you are, not just today because it's your birthday, but even on the ordinary days when you don't really think much of yourself. You might not notice it, but you bring something good into the lives of the people around you. And I hope you never doubt that your presence matters. You deserve to be appreciated, celebrated, and reminded that you're important too. Another year has passed, and I hope you take a moment to appreciate yourself for making it this far. I know life isn't always easy. There are probably days when things don't go as planned, moments when you feel tired of everything, and struggles that you don't always talk about. But look at you, you're still here, still trying, and still moving forward. And honestly, I'm proud of you for that. Even if you think you're not doing enough or you're still far from where you want to be, please don't forget how far you've already come. And please, don't feel like you always have to be okay. You don't have to pretend that everything is fine just to make other people comfortable. If you're tired, take a break. If things get overwhelming, allow yourself to breathe. You don't need to have everything figured out right now. Life isn't a race, and everyone has their own timing. Just keep going at your own pace. I hope you learn to be a little kinder to yourself, especially on the days when things feel heavy. For this new chapter of your life, I genuinely wish you nothing but good things. I hope life treats you better, that more opportunities come your way, and that the things you've been wishing and working for finally happen. I hope you get to experience the kind of happiness that comes naturally, the kind that makes you smile without having to pretend. I hope you meet people who bring you peace, people who understand you, support you, and appreciate you for who you are. And whenever life gets difficult, I hope you don't lose hope. Remember that having a bad day doesn't mean you're having a bad life. Making mistakes doesn't make you a failure, and being lost doesn't mean you'll never find your way. There's still so much ahead of you. So many places to go, memories to make, opportunities to experience, and reasons to smile that you haven't even discovered yet. Don't rush yourself. Your time will come. Also, thank you for being you. Thank you for the random conversations, the laughs, the jokes, and all those little moments that might seem ordinary but actually become memories worth keeping. Sometimes, we don't realize how much we appreciate the simplest moments until we look back on them. And I'm genuinely thankful for the memories we've shared. I may not always say these things out loud, but I hope you know that I appreciate having you in my life. I hope we still get to make more memories together, laugh at the most random things, have more conversations, and experience more moments that we'll look back on someday. There are still so many memories waiting to be made, and I hope this is just another year of many more birthdays and good moments we'll get to celebrate. As you grow older, please don't be too hard on yourself. You don't have to compare your progress to anyone else's. You don't need to prove anything to people just to feel like you're doing enough. Be proud of even the smallest achievements. Learn from your mistakes, let go of things that hurt you, and never be afraid to start again. You're allowed to grow, change, make mistakes, and figure things out along the way. Most of all, I hope you never forget to enjoy life. Don't get so caught up in everything you need to achieve that you forget to appreciate the little things happening around you. You deserve peaceful mornings, genuine laughter, good people, unexpected blessings, and days when you can simply feel happy without worrying about anything else. I pray that God continues to guide you, protect you, and bless you with good health, strength, wisdom, and more opportunities. May He give you the courage to face whatever challenges come your way and the patience to trust His timing. I hope He grants the wishes you've been quietly praying for, even the ones you haven't shared with anyone. And if there's one thing I really want you to remember from all of this, it's that you are appreciated, you matter, and I'm genuinely glad that you're here. You don't have to do something extraordinary to deserve to be celebrated. Just being yourself is already more than enough. So today, enjoy your day. Eat whatever you want, laugh as much as you can, take lots of pictures, and make the most out of it. I hope you feel loved and appreciated, not just today but throughout the entire year. Happy Birthday once again! ❤️ I wish you nothing but happiness, success, good health, genuine friendships, and all the beautiful things life has to offer. Whatever happens in the years ahead, I hope you keep that smile, never lose yourself, and always find a reason to keep moving forward. You deserve good things, and I hope life gives you plenty of reasons to smile. Once again, happy birthday! I'm really grateful to have you in my life. Here's to more memories, more laughter, and more years of friendship. Enjoy your special day. You deserve it! ❤️"
+  
+  ],
+  photos:[                      // put files in /photos and list them here
+    {src:"IMG_0648.jpg",cap:""},
+    {src:"IMG_0649.jpg",cap:""},
+    {src:"IMG_0651.jpg",cap:""},
+    {src:"IMG_0650.jpg",cap:""},
+    {src:"IMG_6582.jpeg",cap:""},
+    {src:"IMG_6640.jpeg",cap:""}
+  ],
+  finalMessage:"Thank you for being you. May this year give back to you everything you have given to others.",
+  signature:"With love"
+};
+</script>
+<!-- ============ END EDIT ============ -->
+
+<script>
+const $=s=>document.querySelector(s),sl=ms=>new Promise(r=>setTimeout(r,ms)),C=CONFIG,N=C.friendName;
+const fill=t=>t.replaceAll('{name}',N);
+document.querySelectorAll('[data-name]').forEach(e=>e.textContent=N);
+document.querySelectorAll('.seal i').forEach(e=>e.textContent=C.initials);
+const show=id=>document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+
+/* ---- particles ---- */
+const cv=$('#fx'),cx=cv.getContext('2d');let W,H,boost=1;
+const P=Array.from({length:80},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.8+.6,s:Math.random()*.5+.15,a:Math.random()*.6+.3,ph:Math.random()*6}));
+function rs(){const d=Math.min(devicePixelRatio||1,2);W=cv.width=innerWidth*d;H=cv.height=innerHeight*d}
+rs();addEventListener('resize',rs);
+(function loop(){cx.clearRect(0,0,W,H);for(const p of P){p.y-=p.s*boost*.0007;p.ph+=.02;p.x+=Math.sin(p.ph)*.0003;if(p.y<-.02){p.y=1.02;p.x=Math.random()}
+const a=Math.min(1,p.a*(.6+.4*Math.sin(p.ph*3))),x=p.x*W,y=p.y*H,r=p.r*(W/900+1);
+cx.fillStyle='rgba(243,223,162,'+a*.15+')';cx.beginPath();cx.arc(x,y,r*3.5,0,6.3);cx.fill();
+cx.fillStyle='rgba(243,223,162,'+a+')';cx.beginPath();cx.arc(x,y,r,0,6.3);cx.fill()}requestAnimationFrame(loop)})();
+
+/* ---- music: your MP3, or a soft built-in piano if the file is missing ---- */
+const A={synth:false,on:false,vol:.6,el:null,ctx:null,g:null,t:null};
+const IC={play:'<svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>',pause:'<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>'};
+const ui=()=>$('#pp').innerHTML=A.on?IC.pause:IC.play;
+function ctxInit(){if(A.ctx)return;A.ctx=new(window.AudioContext||window.webkitAudioContext)();A.g=A.ctx.createGain();A.g.gain.value=A.vol;A.g.connect(A.ctx.destination)}
+function note(f,t,d,v){const x=A.ctx,o=x.createOscillator(),o2=x.createOscillator(),g=x.createGain(),lp=x.createBiquadFilter();
+o.type='triangle';o2.type='sine';o.frequency.value=f;o2.frequency.value=f*2;lp.type='lowpass';lp.frequency.value=2200;
+g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+o.connect(lp);o2.connect(lp);lp.connect(g);g.connect(A.g);o.start(t);o2.start(t);o.stop(t+d);o2.stop(t+d)}
+const CH=[[220,261.6,329.6,440],[174.6,220,261.6,349.2],[261.6,329.6,392,523.3],[196,246.9,293.7,392]];let ci=0;
+function bar(){const c=CH[ci++%4],t=A.ctx.currentTime+.05;c.forEach((f,i)=>note(f,t+i*.4,3.2,.12));note(c[0]/2,t,3.6,.1)}
+function synth(){if(A.synth)return;A.synth=true;ctxInit();A.ctx.resume();A.on=true;bar();A.t=setInterval(bar,3200);ui()}
+function startMusic(){if(!C.music)return synth();const e=A.el=new Audio(C.music);e.loop=true;e.volume=A.vol;
+e.addEventListener('error',synth,{once:true});e.play().then(()=>{A.on=true;ui()}).catch(x=>{if(x.name!=='NotAllowedError')synth()})}
+function toggle(){if(A.synth){if(A.on){clearInterval(A.t);A.ctx.suspend()}else{A.ctx.resume();bar();A.t=setInterval(bar,3200)}A.on=!A.on}
+else if(A.el){if(A.el.paused){A.el.play();A.on=true}else{A.el.pause();A.on=false}}ui()}
+$('#pp').onclick=toggle;
+$('#vol').oninput=e=>{A.vol=+e.target.value;if(A.el)A.el.volume=A.vol;if(A.g)A.g.gain.value=A.vol};
+function swell(){ctxInit();A.ctx.resume();if(!A.on)return;const t=A.ctx.currentTime+.1;
+[261.6,329.6,392,523.3,659.3,784,1046.5].forEach((f,i)=>note(f,t+i*.5,4,.14));[130.8,261.6,329.6,392,523.3].forEach(f=>note(f,t+3.6,5,.12))}
+
+/* ---- sequence ---- */
+$('#begin').onclick=async()=>{startMusic();ui();$('#mus').classList.add('on');show('s-envelope'.replace('envelope','env'))};
+let busy=false;
+async function openEnv(){if(busy)return;busy=true;const env=$('#env');
+['#eh','#es','#openBtn'].forEach(s=>$(s).classList.add('hide'));
+env.classList.add('fwd');await sl(900);
+env.classList.add('crack');await sl(1100);
+env.classList.add('open');await sl(1500);
+env.classList.add('out');await sl(1900);
+show('s-letter');$('#paper').classList.add('unf');await sl(2500);typeLetter()}
+$('#env').onclick=openEnv;$('#openBtn').onclick=openEnv;
+$('#env').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openEnv()}};
+
+C.letter.forEach(t=>{const p=document.createElement('p');[...fill(t)].forEach(ch=>{const s=document.createElement('span');s.textContent=ch;p.append(s)});$('#txt').append(p)});
+async function typeLetter(){let skip=false;const pa=$('#paper');pa.onclick=()=>skip=true;
+for(const s of pa.querySelectorAll('span')){s.classList.add('v');const ch=s.textContent;if(!skip)await sl(/[.?!]/.test(ch)?420:ch===','?220:34);pa.scrollTop=pa.scrollHeight}
+$('#cont').classList.add('show')}
+
+$('#cont').onclick=async()=>{$('#cont').classList.remove('show');
+$('#s-letter').classList.remove('on');await sl(1700);
+$('#fx').style.opacity=0;await sl(1400);
+$('#fx').style.opacity=1;boost=3;show('s-count');swell();
+const n=$('#num');for(const k of[3,2,1]){n.textContent=k;n.classList.remove('tick');void n.offsetWidth;n.classList.add('tick');await sl(1100)}
+show('');await sl(800);
+document.body.classList.remove('lock');$('#main').hidden=false;scrollTo(0,0);
+$('#flash').classList.add('go');$('#hero').classList.add('go');observe();
+setTimeout(()=>boost=1.4,6000)};
+
+/* ---- main page content ---- */
+function split(el,text,i){text.split(' ').forEach((w,k,a)=>{const s=document.createElement('span');s.className='w';
+[...w].forEach(ch=>{const c=document.createElement('span');c.className='ch';c.textContent=ch;c.style.setProperty('--i',i++);s.append(c)});
+el.append(s);if(k<a.length-1)el.append(' ')});return i}
+let gi=split($('#gr .l1'),fill(C.greeting[0]),0);split($('#gr .nm'),fill(C.greeting[1]),gi);
+$('#kick').textContent=C.kicker;$('#tag').textContent=C.tagline;
+C.message.forEach(t=>{const p=document.createElement('p');p.textContent=fill(t);$('#msg').append(p)});
+$('#fin').textContent=fill(C.finalMessage);$('#sig').textContent=C.signature;
+const ph=[];
+C.photos.forEach((o,i)=>{const f=document.createElement('figure'),im=new Image(),cp=document.createElement('figcaption');
+cp.textContent=o.cap;im.alt=o.cap;im.loading='lazy';im.src=o.src;f.append(im,cp);f.tabIndex=0;
+im.onerror=()=>{const d=document.createElement('div');d.className='em';d.textContent='Your photo here';im.replaceWith(d);f.dataset.miss=1};
+f.className='ph';f.onclick=()=>openLb(i);f.onkeydown=e=>{if(e.key==='Enter')openLb(i)};$('#grid').append(f);ph.push(f)});
+let li=0;
+function openLb(i){if(ph[i].dataset.miss)return;li=i;$('#li').src=C.photos[i].src;$('#lc').textContent=C.photos[i].cap;$('#lb').hidden=false}
+function step(d){let i=li,n=0;do{i=(i+d+ph.length)%ph.length;n++}while(ph[i].dataset.miss&&n<ph.length);openLb(i)}
+$('#lx').onclick=()=>$('#lb').hidden=true;$('#lp').onclick=()=>step(-1);$('#ln').onclick=()=>step(1);
+$('#lb').onclick=e=>{if(e.target.id==='lb')$('#lb').hidden=true};
+addEventListener('keydown',e=>{if($('#lb').hidden)return;if(e.key==='Escape')$('#lb').hidden=true;if(e.key==='ArrowLeft')step(-1);if(e.key==='ArrowRight')step(1)});
+function observe(){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.rv').forEach(e=>io.observe(e))}
+</script>
+</body></html>
